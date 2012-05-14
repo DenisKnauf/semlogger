@@ -1,4 +1,4 @@
-class Slogger::Filter
+class Semlogger::Filter
 	attr_accessor :level, :logdev
 
 	def initialize level, logdev
@@ -15,9 +15,9 @@ end
 
 %w[debug info warn error fatal].each do |level|
 	eval <<-EOC
-		class ::Slogger::F#{level.camelcase} < Slogger::Filter
+		class ::Semlogger::F#{level.camelcase} < Semlogger::Filter
 			def initialize *a
-				super Slogger::#{level.upcase}, *a
+				super Semlogger::#{level.upcase}, *a
 			end
 		end
 	EOC

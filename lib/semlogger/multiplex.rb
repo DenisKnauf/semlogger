@@ -1,4 +1,4 @@
-class Slogger::Multiplex
+class Semlogger::Multiplex
 	def initialize( *dests)  @__dests__ = dests  end
 
 	def write( *a, &e)  @__dests__.each {|d| d.write *a, &e }  end

@@ -1,4 +1,4 @@
-class Slogger::Formatter < ::Logger::Formatter
+class Semlogger::Formatter < ::Logger::Formatter
 	def initialize tags, data
 		@tags, @data = tags, data
 	end

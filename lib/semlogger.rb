@@ -1,9 +1,9 @@
 require 'json'
 
-class Slogger < ::Logger
+class Semlogger < ::Logger
 	def initialize logdev = nil, *a, &e
 		case logdev
-		when String, nil then logdev = ::Slogger::Writer.new logdev
+		when String, nil then logdev = ::Semlogger::Writer.new logdev
 		end
 		@level, @data, @tags, @logdev = DEBUG, {}, [], logdev
 	end
@@ -75,8 +75,8 @@ class Slogger < ::Logger
 	end
 end
 
-require 'slogger/rotate'
-require 'slogger/multiplex'
-require 'slogger/rack'
-require 'slogger/filter'
-require 'slogger/writer'
+require 'semlogger/rotate'
+require 'semlogger/multiplex'
+require 'semlogger/rack'
+require 'semlogger/filter'
+require 'semlogger/writer'

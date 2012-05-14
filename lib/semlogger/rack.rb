@@ -1,4 +1,4 @@
-class Slogger::Rack < Rails::Rack::Logger
+class Semlogger::Rack < Rails::Rack::Logger
 	def initialize app, tags = nil, data = nil
 		super app, tags
 		@data = data

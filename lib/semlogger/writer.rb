@@ -1,9 +1,9 @@
-class Slogger::Output
+class Semlogger::Output
 end
 
-class Slogger::Writer < Slogger::Output
+class Semlogger::Writer < Semlogger::Output
 	def initialize logdev = nil
-		@logdev = logdev || ::Slogger::Rotate.new( ::Rails.root.join( 'log', ::Rails.env).to_s.gsub('%', '%%') + '.%Y-%m-%d.%$.log')
+		@logdev = logdev || ::Semlogger::Rotate.new( ::Rails.root.join( 'log', ::Rails.env).to_s.gsub('%', '%%') + '.%Y-%m-%d.%$.log')
 	end
 
 	def add severity, time, progname, data, tags, message
@@ -11,7 +11,7 @@ class Slogger::Writer < Slogger::Output
 	end
 end
 
-class Slogger::Printer < Slogger::Output
+class Semlogger::Printer < Semlogger::Output
 	def initialize logdev = nil
 		@logdev = logdev || $stdout
 		@last_reqid = nil

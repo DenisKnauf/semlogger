@@ -1,4 +1,4 @@
-class Slogger::Tailer < Rails::Rack::LogTailer
+class Semlogger::Tailer < Rails::Rack::LogTailer
 	def initialize app, log = nil
 		@app = app
 		log ||= Rails.root.join( 'log', Rails.env).to_s.gsub('%', '%%') + '.%Y-%m-%d.%$.log'

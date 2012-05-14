@@ -4,11 +4,11 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "slogger"
+    gem.name = "semlogger"
     gem.summary = %Q{(Semi-)Structured Logger}
     gem.description = %Q{(Semi-)Structured Logger for Ruby (and Rails)}
     gem.email = %w[Denis.Knauf@gmail.com]
-    gem.homepage = "http://github.com/DenisKnauf/Slogger"
+    gem.homepage = "http://github.com/DenisKnauf/semlogger"
     gem.authors = ["Denis Knauf"]
     gem.files = %w[AUTHORS README.md VERSION LICENSE lib/**/*.rb]
     gem.require_paths = %w[lib]
@@ -52,7 +52,7 @@ Rake::RDocTask.new do |rdoc|
   end
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "Slogger #{version}"
+  rdoc.title = "semlogger #{version}"
   rdoc.rdoc_files.include 'README.md'
   rdoc.rdoc_files.include 'AUTHORS'
   rdoc.rdoc_files.include 'LICENSE'

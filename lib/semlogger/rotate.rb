@@ -1,4 +1,4 @@
-class Slogger::Rotate
+class Semlogger::Rotate
 	attr_reader :file
 
 	def filename()  @filename.dup  end
