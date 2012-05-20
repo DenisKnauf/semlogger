@@ -7,7 +7,7 @@ class Semlogger::Writer < Semlogger::Output
 	end
 
 	def add severity, time, progname, data, tags, message
-		@logdev.write [severity, time, progname, data, tags, message].to_json
+		@logdev.write [severity, time, progname, data, tags, message].to_json+"\n"
 	end
 end
 
@@ -24,7 +24,7 @@ class Semlogger::Printer < Semlogger::Output
 				r = "Exception: #{message[2]} (#{message[1]}"
 				r << "\n\t" << message[3].join( "\n\t")  if message[3]
 				r
-			when String, Numeric, true, false, nil then message[0]
+			when :str, :const then message[1]
 			when :obj then message[1].inspect
 			else message.inspect
 			end

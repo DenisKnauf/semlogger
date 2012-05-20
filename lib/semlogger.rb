@@ -35,7 +35,8 @@ class Semlogger < ::Logger
 
 	def format_msg msg
 		case msg
-		when String, Numeric, true, false, nil then [msg]
+		when Numeric, true, false, nil then [:const, msg]
+		when String then [:str, msg]
 		when Exception then [:exception, msg.class.name, msg.message.to_s, msg.backtrace]
 		else [:obj, msg]
 		end
