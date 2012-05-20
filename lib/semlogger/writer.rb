@@ -7,7 +7,7 @@ class Semlogger::Writer < Semlogger::Output
 	end
 
 	def add severity, time, progname, data, tags, message
-		@logdev.write [severity, time, progname, data, tags, message].to_json+"\n"
+		@logdev.write [severity, time.xmlschema(9), progname, data, tags, message].to_json+"\n"
 	end
 end
 
