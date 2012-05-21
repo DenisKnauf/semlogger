@@ -24,8 +24,7 @@ class Semlogger::Printer < Semlogger::Output
 				r = "Exception: #{message[2]} (#{message[1]}"
 				r << "\n\t" << message[3].join( "\n\t")  if message[3]
 				r
-			when :str, :const then message[1]
-			when :obj then message[1].inspect
+			when :String, :const then message[1]
 			else message.inspect
 			end
 		reqid = data[:reqid]

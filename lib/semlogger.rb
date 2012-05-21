@@ -1,10 +1,62 @@
 require 'json'
 
+class Object
+	def to_semlogger
+		[self.class.name.to_sym, self.respond_to?( :serializable_hash) ? self.serializable_hash : self ]
+	end
+end
+
+class Exception
+	def to_semlogger
+		[:exception] + super
+	end
+end
+
+class String
+	def to_semlogger
+		[:String, self]
+	end
+end
+
+%w[Numeric FalseClass TrueClass NilClass].each do |cl|
+	Object.const_get( cl).class_eval do
+		def to_semlogger
+			[:const, self]
+		end
+	end
+end
+
 class Semlogger < ::Logger
+	class CustomType
+		def initialize name, *obj
+			@name, @obj = name.to_s.to_sym, obj
+		end
+
+		def to_semlogger
+			[@name] + @obj
+		end
+	end
+
+	attr_accessor :logdev, :level, :progname
+	class <<self
+		attr_accessor :progname
+
+		def custom *a
+			CustomType.new *a
+		end
+	end
+
+	def custom *a
+		CustomType.new *a
+	end
+
+	@@progname = nil
+
 	def initialize logdev = nil, *a, &e
 		case logdev
 		when String, nil then logdev = ::Semlogger::Writer.new logdev
 		end
+		@progname = a[0] || @@progname
 		@level, @data, @tags, @logdev = DEBUG, {}, [], logdev
 	end
 
@@ -34,11 +86,10 @@ class Semlogger < ::Logger
 	end
 
 	def format_msg msg
+		msg = msg.to_semlogger
 		case msg
-		when Numeric, true, false, nil then [:const, msg]
-		when String then [:str, msg]
-		when Exception then [:exception, msg.class.name, msg.message.to_s, msg.backtrace]
-		else [:obj, msg]
+		when Array then msg
+		else [msg.class.name.to_sym, msg.inspect]
 		end
 	end
 
@@ -60,6 +111,7 @@ class Semlogger < ::Logger
 	end
 
 	def data data, &e
+		return @data  unless e
 		@data.update data
 		keys = data.keys
 		yield
