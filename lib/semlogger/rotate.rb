@@ -9,11 +9,7 @@ class Semlogger::Rotate
 
 	def open_if
 		name = Time.now.strftime( @filename).gsub /%\$/, $$.to_s
-		#p at: Time.now, open_if: name, cur: @file ? @file.path : nil, e: @file ? name == @file.path : nil
-		if @file and name == @file.path
-			@file.close
-			@file = nil
-		end
+		@file.close  if @file and name != @file.path
 		@file = File.open name, 'a'  unless @file
 		@file
 	end
@@ -24,5 +20,6 @@ class Semlogger::Rotate
 
 	def close
 		@file.close
+		@file = nil
 	end
 end
