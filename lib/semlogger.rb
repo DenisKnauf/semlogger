@@ -28,6 +28,8 @@ end
 
 class Semlogger < ::Logger
 	class CustomType
+		attr_accessor :logger
+
 		def initialize name, *obj
 			@name, @obj = name.to_s.to_sym, obj
 		end
@@ -35,19 +37,26 @@ class Semlogger < ::Logger
 		def to_semlogger
 			[@name] + @obj
 		end
+
+		def add severity, progname = nil, &block
+			@logger.add severity, self, progname = nil, &block
+		end
+		::Semlogger::Severity.constants.each do |severity|
+			module_eval "def #{severity.downcase}( *a, &e) add #{::Semlogger::Severity.const_get severity}, *a, &e end", __FILE__, __LINE__
+		end
 	end
 
 	attr_accessor :logdev, :level, :progname
 	class <<self
 		attr_accessor :progname
 
-		def custom *a
-			CustomType.new *a
-		end
+		def custom( *a)  CustomType.new *a  end
 	end
 
 	def custom *a
-		CustomType.new *a
+		r = CustomType.new *a
+		r.logger = self
+		r
 	end
 
 	@@progname = nil
@@ -60,7 +69,7 @@ class Semlogger < ::Logger
 		@level, @data, @tags, @logdev = DEBUG, {}, [], logdev
 	end
 
-	def tagged tags, &e
+	def tagged *tags, &e
 		@tags += tags
 		tags = tags.size
 		yield
