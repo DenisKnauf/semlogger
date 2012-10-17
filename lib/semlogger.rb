@@ -27,22 +27,25 @@ end
 end
 
 class Semlogger < ::Logger
-	class CustomType
+	class Base
 		attr_accessor :logger
 
+		def add severity, progname = nil, &block
+			@logger.add severity, self, progname = nil, &block
+		end
+
+		::Semlogger::Severity.constants.each do |severity|
+			module_eval "def #{severity.downcase}( *a, &e) add #{::Semlogger::Severity.const_get severity}, *a, &e end", __FILE__, __LINE__
+		end
+	end
+
+	class CustomType < Base
 		def initialize name, *obj
 			@name, @obj = name.to_s.to_sym, obj
 		end
 
 		def to_semlogger
 			[@name] + @obj
-		end
-
-		def add severity, progname = nil, &block
-			@logger.add severity, self, progname = nil, &block
-		end
-		::Semlogger::Severity.constants.each do |severity|
-			module_eval "def #{severity.downcase}( *a, &e) add #{::Semlogger::Severity.const_get severity}, *a, &e end", __FILE__, __LINE__
 		end
 	end
 
