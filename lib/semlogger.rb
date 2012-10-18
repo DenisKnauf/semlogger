@@ -2,7 +2,10 @@ require 'json'
 
 class Object
 	def to_semlogger
-		[self.class.name.to_sym, self.respond_to?( :serializable_hash) ? self.serializable_hash : self ]
+		[
+			self.class.name.to_sym,
+			self.respond_to?( :serializable_hash) ? self.serializable_hash : self
+		]
 	end
 end
 
@@ -28,14 +31,25 @@ end
 
 class Semlogger < ::Logger
 	class Base
+		class <<self
+			attr_accessor :logger
+		end
 		attr_accessor :logger
 
-		def add severity, progname = nil, &block
-			@logger.add severity, self, progname = nil, &block
+		def initialize
+			@logger = self.class.logger
+		end
+
+		def add severity, logger = nil, &block
+			(logger || @logger).add severity, self, &block
 		end
 
 		::Semlogger::Severity.constants.each do |severity|
-			module_eval "def #{severity.downcase}( *a, &e) add #{::Semlogger::Severity.const_get severity}, *a, &e end", __FILE__, __LINE__
+			module_eval <<-EOC, __FILE__, __LINE__+1
+				def #{severity.downcase} *a, &e
+					add #{::Semlogger::Severity.const_get severity}, *a, &e
+				end
+			EOC
 		end
 	end
 
@@ -51,16 +65,10 @@ class Semlogger < ::Logger
 
 	attr_accessor :logdev, :level, :progname
 	class <<self
-		attr_accessor :progname
-
-		def custom( *a)  CustomType.new *a  end
+		attr_accessor :progname, :logger
+		def custom( *a)  CustomType.new( *a).tap {|t| t.logger = self.logger }  end
 	end
-
-	def custom *a
-		r = CustomType.new *a
-		r.logger = self
-		r
-	end
+	def custom( *a)  CustomType.new( *a).tap {|t| t.logger = self }  end
 
 	@@progname = nil
 
@@ -70,6 +78,7 @@ class Semlogger < ::Logger
 		end
 		@progname = a[0] || @@progname
 		@level, @data, @tags, @logdev = DEBUG, {}, [], logdev
+		self.class.logger = self  if !self.class.logger && self.class.logger.is_a?( Semlogger::Default)
 	end
 
 	def tagged *tags, &e
@@ -145,3 +154,9 @@ require 'semlogger/multiplex'
 require 'semlogger/rack'
 require 'semlogger/filter'
 require 'semlogger/writer'
+
+class Semlogger
+	class Default < Semlogger
+	end
+	self.logger ||= Default.new
+end

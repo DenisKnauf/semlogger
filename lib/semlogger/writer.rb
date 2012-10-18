@@ -3,7 +3,11 @@ end
 
 class Semlogger::Writer < Semlogger::Output
 	def initialize logdev = nil
-		@logdev = logdev || ::Semlogger::Rotate.new( ::Rails.root.join( 'log', ::Rails.env).to_s.gsub('%', '%%') + '.%Y-%m-%d.%$.log')
+		@logdev = case logdev
+			when String then ::Semlogger::Rotate.new logdev
+			when nil then ::Semlogger::Rotate.new "log/#{File.basename $0}.%Y-%m-%d.%$.log"
+			else logdev
+			end
 	end
 
 	def add severity, time, progname, data, tags, message
