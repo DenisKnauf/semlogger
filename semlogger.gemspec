@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{semlogger}
-  s.version = "0.0.7"
+  s.version = "0.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Denis Knauf"]
-  s.date = %q{2012-10-17}
+  s.date = %q{2012-10-19}
   s.description = %q{(Semi-)Structured Logger for Ruby (and Rails)}
   s.email = ["Denis.Knauf@gmail.com"]
   s.extra_rdoc_files = [
