@@ -151,7 +151,6 @@ end
 
 require 'semlogger/rotate'
 require 'semlogger/multiplex'
-require 'semlogger/rack'
 require 'semlogger/filter'
 require 'semlogger/writer'
 
