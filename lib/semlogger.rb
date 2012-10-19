@@ -66,6 +66,25 @@ class Semlogger < ::Logger
 	attr_accessor :logdev, :level, :progname
 	class <<self
 		attr_accessor :progname, :logger
+
+		def new_rails_logger config
+			require 'semlogger/rack'
+			logdev = ::Rails.root.join( 'log', "#{::Rails.env.to_s.gsub('%', '%%')}.%Y-%m-%d.%$.log")
+			logger = nil
+			if Rails.env.production?
+				logger.new logdev
+				logger.level = INFO
+			elsif Rails.env.development?
+				logger.new Semlogger::Multiplex.new( Semlogger::FInfo.new( Semlogger::Printer.new), Semlogger::Writer.new( logdev))
+				logger.level = DEBUG
+			else
+				logger.new logdev
+				logger.level = DEBUG
+			end
+			config.middleware.swap Rails::Rack::Logger, Semlogger::Rack, [], {reqid: :uuid}
+			config.logger = logger
+		end
+
 		def custom( *a)  CustomType.new( *a).tap {|t| t.logger = self.logger }  end
 	end
 	def custom( *a)  CustomType.new( *a).tap {|t| t.logger = self }  end
