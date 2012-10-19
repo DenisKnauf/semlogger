@@ -69,17 +69,17 @@ class Semlogger < ::Logger
 
 		def new_rails_logger config
 			require 'semlogger/rack'
-			logdev = ::Rails.root.join( 'log', "#{::Rails.env.to_s.gsub('%', '%%')}.%Y-%m-%d.%$.log")
+			logdev = ::Rails.root.join( 'log', "#{::Rails.env.to_s.gsub('%', '%%')}.%Y-%m-%d.%$.log").to_s
 			logger = nil
 			if Rails.env.production?
-				logger.new logdev
-				logger.level = INFO
+				logger = new logdev
+				logger.level = Semlogger::INFO
 			elsif Rails.env.development?
-				logger.new Semlogger::Multiplex.new( Semlogger::FInfo.new( Semlogger::Printer.new), Semlogger::Writer.new( logdev))
-				logger.level = DEBUG
+				logger = new Semlogger::Multiplex.new( Semlogger::FInfo.new( Semlogger::Printer.new), Semlogger::Writer.new( logdev))
+				logger.level = Semlogger::DEBUG
 			else
-				logger.new logdev
-				logger.level = DEBUG
+				logger = new logdev
+				logger.level = Semlogger::DEBUG
 			end
 			config.middleware.swap Rails::Rack::Logger, Semlogger::Rack, [], {reqid: :uuid}
 			config.logger = logger
