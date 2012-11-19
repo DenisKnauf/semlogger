@@ -4,10 +4,9 @@ class Semlogger::Rack < Rails::Rack::Logger
 		@data = data
 	end
 
-	def call_app env
-		request = ActionDispatch::Request.new env
+	def call_app request, env
 		path = request.filtered_path
-		Rails.logger.info Semlogger.custom :connection, request.ip, Thread.current.object_id, request.request_method, path
+		Semlogger.custom( :connection, request.ip, Thread.current.object_id, request.request_method, path).info
 		@app.call env
 	ensure
 		ActiveSupport::LogSubscriber.flush_all!

@@ -64,6 +64,11 @@ class Semlogger < ::Logger
 	end
 
 	attr_accessor :logdev, :level, :progname
+
+	# some libs use #log_level
+	def log_level=( level)  @level = level  end
+	def log_level()  @level  end
+
 	class <<self
 		attr_accessor :progname, :logger
 
@@ -110,9 +115,7 @@ class Semlogger < ::Logger
 
 	def add severity, message = nil, progname = nil, &block
 		severity ||= UNKNOWN
-		if @logdev.nil? or severity < @level
-			return true
-		end
+		return true  if @logdev.nil? or severity < @level
 		progname ||= @progname
 		if message.nil?
 			if block_given?
