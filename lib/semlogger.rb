@@ -72,9 +72,10 @@ class Semlogger < ::Logger
 	class <<self
 		attr_accessor :progname, :logger
 
-		def new_rails_logger config
+		def new_rails_logger config, logdev = nil
 			require 'semlogger/rack'
-			logdev = ::Rails.root.join( 'log', "#{::Rails.env.to_s.gsub('%', '%%')}.%Y-%m-%d.%$.log").to_s
+			logdev ||= ::Rails.root.join 'log', "#{::Rails.env.to_s.gsub('%', '%%')}.%Y-%m-%d.%$.log"
+			logdev = logdev.to_s
 			logger = nil
 			if Rails.env.production?
 				logger = new logdev
@@ -106,11 +107,12 @@ class Semlogger < ::Logger
 	end
 
 	def tagged *tags, &e
-		@tags += tags
+		@tags += tags.flatten.compact
 		tags = tags.size
 		yield
 	ensure
-		tags.times { @tags.pop }
+		#tags.times { @tags.pop }
+		@tags.slice! -tags .. -1
 	end
 
 	def add severity, message = nil, progname = nil, &block
