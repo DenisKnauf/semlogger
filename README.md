@@ -1,4 +1,5 @@
-Semlogger
-=======
+Repository moved to git.denkn.at
+================================
 
-(Semi-)Structured Logger for Ruby (and Rails)
+This repository is moved to https://git.denkn.at/deac/semlogger/
+Please visit the new Repository.
